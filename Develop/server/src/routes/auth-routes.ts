@@ -4,10 +4,10 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: { username } });
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -17,10 +17,10 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    const token = jwt.sign({ userId: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
-    res.json({ token });
+    const token = jwt.sign({ userId: user.id }, 'your_jwt_secret', { expiresIn: '1h' });
+    return res.json({ token });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
